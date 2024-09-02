@@ -1,10 +1,10 @@
 import { test, expect, request} from '@playwright/test';
-import tags from '../test-data/tags.json';
+import greg from '../test-data/tags.json';
 
 test.beforeEach(async ({ page }) => {
   await page.route('*/**/api/tags', async (route) => {
     await route.fulfill({
-      body: JSON.stringify(tags)
+      body: JSON.stringify(greg)
     })
   })
 
@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
 });
 test('test 1', async ({ page }) => {
   await page.route('*/**/api/articles?limit=10&offset=0', async(route) => {
-    const response = await route.fetch()                                                      //complete the api call and return the response  
+    const response = await route.fetch()                                                      //complete the api call and return/fetch the response  
     const responseBody = await response.json()                                                //parse the response body          
     responseBody.articles[0].title = 'This is a Mock test title'                              //modify the response body  
     responseBody.articles[0].description = 'This is a Mock test description'                  //modify the response body
