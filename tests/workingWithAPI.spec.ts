@@ -1,10 +1,10 @@
-import { test, expect, request} from '@playwright/test';
-import greg from '../test-data/tags.json';
+import { test, expect} from '@playwright/test';
+import tags from '../test-data/tags.json';
 
 test.beforeEach(async ({ page }) => {
   await page.route('*/**/api/tags', async (route) => {
     await route.fulfill({
-      body: JSON.stringify(greg)
+      body: JSON.stringify(tags)
     })
   })
 
@@ -12,8 +12,8 @@ test.beforeEach(async ({ page }) => {
 
 });
 test('test 1', async ({ page }) => {
-  await page.route('*/**/api/articles?limit=10&offset=0', async(route) => {
-    const response = await route.fetch()                                                      //complete the api call and return/fetch the response  
+  await page.route('*/**/api/articles?limit=10&offset=0', async (route) => {
+    const response = await route.fetch()                                                      //complete the api call and return/
     const responseBody = await response.json()                                                //parse the response body          
     responseBody.articles[0].title = 'This is a Mock test title'                              //modify the response body  
     responseBody.articles[0].description = 'This is a Mock test description'                  //modify the response body
@@ -32,12 +32,18 @@ test('test 1', async ({ page }) => {
 
 test('delete article', async ({ page, request }) => {
  
-  
   const articleResponse = await request.post('https://conduit-api.bondaracademy.com/api/articles/', {
     data: {
-      "article":{"title":"Lebron the goat","description":"Is Lebron the best Basketball player of all time?\",","body":"\"Michael Jordan is still the greatest of all time in the eyes of NBA players, but his lead over LeBron James is narrowing. On Monday, The Athletic released the results of its annual player poll, and 45.9 percent of the 133 players who responded regarding the GOAT question picked His Airness. That was followed by James at 42.1 percent and Kobe Bryant at 9.8 percent","tagList":[]}
+      article: {
+        title: "Lebron the goat",
+        description: "Is Lebron the best Basketball player of all time?\",",
+        body: "\"Michael Jordan is still the greatest of all time in the eyes of NBA players, but his lead over LeBron James is narrowing. On Monday, The Athletic released the results of its annual player poll, and 45.9 percent of the 133 players who responded regarding the GOAT question picked His Airness. That was followed by James at 42.1 percent and Kobe Bryant at 9.8 percent",
+        tagList: []
+      }
     },
   })
+  const articleResponseBody = await articleResponse.json()
+  console.log(articleResponseBody)
   expect(articleResponse.status()).toEqual(201)
 
   await page.getByText('Global Feed').click()
@@ -49,7 +55,7 @@ test('delete article', async ({ page, request }) => {
   await expect(page.locator('app-article-list h1').first()).not.toContainText('Lebron the goat')
 })
 
-test('create article', async ({page, request}) => {
+test('create article and delete article through slug ID', async ({page, request}) => {
   await page.getByText('New Article').click()
   await page.getByRole('textbox', {name: 'Article Title'}).fill('Playwright Rocks')
   await page.getByRole('textbox', {name: 'What\'s this article about?'}).fill('About the Playwright')

@@ -15,6 +15,7 @@ setup('authentication', async ({page,request}) => {
 
     // await page.context().storageState({path: authFile})  // before this run we have to make sure we are logged in, saves the authenticated state
 
+
     const response = await request.post('https://conduit-api.bondaracademy.com/api/users/login', {
         data: {
           "user": { "email": "mnkollo23@mailinator.com", "password": "Welcome!1" }
@@ -22,6 +23,7 @@ setup('authentication', async ({page,request}) => {
       })
       const responseBody = await response.json()
       const accessToken = responseBody.user.token
+      console.log(accessToken)
       user.origins[0].localStorage[0].value = accessToken
       fs.writeFileSync(authFile, JSON.stringify(user))
 
